@@ -19,6 +19,7 @@ app.use(cors({
   origin: [
     'http://localhost:5173',
     'http://localhost:5174',
+    'https://intuitive-peace-production-bb8d.up.railway.app',
     process.env.FRONTEND_URL
   ].filter(Boolean),
   credentials: true
