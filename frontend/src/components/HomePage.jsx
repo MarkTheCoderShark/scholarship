@@ -822,9 +822,9 @@ const HomePage = () => {
             </Typography>
           </Box>
 
-          <Grid container spacing={{ xs: 1, sm: 2, md: 4 }} justifyContent="center">
+          <Grid container spacing={{ xs: 1, sm: 2, md: 4 }} justifyContent="center" sx={{ mt: 2 }}>
             {pricingPlans.map((plan, idx) => (
-              <Grid size={6} key={idx}>
+              <Grid size={6} key={idx} sx={{ overflow: 'visible' }}>
                 <Card
                   elevation={0}
                   sx={{
@@ -836,6 +836,7 @@ const HomePage = () => {
                     position: 'relative',
                     bgcolor: plan.highlighted ? colors.primaryLight : colors.surface,
                     transition: 'transform 0.2s',
+                    overflow: 'visible',
                     '&:hover': {
                       transform: 'translateY(-4px)',
                     }
