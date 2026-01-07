@@ -205,7 +205,7 @@ const HomePage = () => {
       >
         <Container maxWidth="lg">
           <Grid container spacing={4} alignItems="center">
-            <Grid item xs={12} md={7}>
+            <Grid size={{ xs: 12, md: 7 }}>
               {/* Trust Signal Badge */}
               <Chip
                 icon={<StarIcon sx={{ color: '#ffd700 !important', fontSize: 18 }} />}
@@ -356,7 +356,7 @@ const HomePage = () => {
             </Grid>
 
             {/* Hero Visual - Scholarship Preview Cards */}
-            <Grid item xs={12} md={5}>
+            <Grid size={{ xs: 12, md: 5 }}>
               <Box
                 sx={{
                   bgcolor: 'rgba(255,255,255,0.1)',
@@ -488,7 +488,7 @@ const HomePage = () => {
           >
             <Grid container spacing={3} justifyContent="center">
               {stats.map((stat, idx) => (
-                <Grid item xs={6} md={3} key={idx}>
+                <Grid size={{ xs: 6, md: 3 }} key={idx}>
                   <Box
                     textAlign="center"
                     sx={{
@@ -576,7 +576,7 @@ const HomePage = () => {
 
           <Grid container spacing={{ xs: 1, sm: 2, md: 4 }} alignItems="stretch">
             {steps.map((step, idx) => (
-              <Grid item xs={4} key={idx}>
+              <Grid size={4} key={idx}>
                 <Card
                   elevation={0}
                   sx={{
@@ -720,7 +720,7 @@ const HomePage = () => {
 
           <Grid container spacing={{ xs: 1, sm: 2, md: 3 }}>
             {features.map((feature, idx) => (
-              <Grid item xs={6} sm={6} md={3} key={idx}>
+              <Grid size={{ xs: 6, md: 3 }} key={idx}>
                 <Card
                   elevation={0}
                   sx={{
@@ -824,7 +824,7 @@ const HomePage = () => {
 
           <Grid container spacing={{ xs: 1, sm: 2, md: 4 }} justifyContent="center">
             {pricingPlans.map((plan, idx) => (
-              <Grid item xs={6} key={idx}>
+              <Grid size={6} key={idx}>
                 <Card
                   elevation={0}
                   sx={{
@@ -1042,7 +1042,7 @@ const HomePage = () => {
 
           <Grid container spacing={{ xs: 1, sm: 2, md: 4 }}>
             {testimonials.map((testimonial, idx) => (
-              <Grid item xs={4} key={idx}>
+              <Grid size={4} key={idx}>
                 <Card
                   elevation={0}
                   sx={{
@@ -1243,7 +1243,7 @@ const HomePage = () => {
         <Container maxWidth="lg">
           <Grid container spacing={4}>
             {/* Brand Column */}
-            <Grid item xs={12} md={4}>
+            <Grid size={{ xs: 12, md: 4 }}>
               <Typography
                 variant="h5"
                 component="p"
@@ -1313,7 +1313,7 @@ const HomePage = () => {
             </Grid>
 
             {/* Navigation Columns */}
-            <Grid item xs={6} sm={4} md={2}>
+            <Grid size={{ xs: 6, sm: 4, md: 2 }}>
               <Typography
                 variant="subtitle2"
                 component="h3"
@@ -1364,7 +1364,7 @@ const HomePage = () => {
               </Stack>
             </Grid>
 
-            <Grid item xs={6} sm={4} md={2}>
+            <Grid size={{ xs: 6, sm: 4, md: 2 }}>
               <Typography
                 variant="subtitle2"
                 component="h3"
@@ -1414,7 +1414,7 @@ const HomePage = () => {
               </Stack>
             </Grid>
 
-            <Grid item xs={6} sm={4} md={2}>
+            <Grid size={{ xs: 6, sm: 4, md: 2 }}>
               <Typography
                 variant="subtitle2"
                 component="h3"
@@ -1468,7 +1468,7 @@ const HomePage = () => {
               </Stack>
             </Grid>
 
-            <Grid item xs={6} sm={4} md={2}>
+            <Grid size={{ xs: 6, sm: 4, md: 2 }}>
               <Typography
                 variant="subtitle2"
                 component="h3"
