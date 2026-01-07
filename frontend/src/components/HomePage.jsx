@@ -1,252 +1,446 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import { useNavigate, Link as RouterLink } from "react-router-dom";
 import {
   Box, Container, Typography, Button, Grid, Card, CardContent,
-  Avatar, Stack, Chip, useTheme, useMediaQuery, Paper
+  Avatar, Stack, Chip, useTheme, useMediaQuery, Paper, TextField,
+  Link, IconButton, Divider
 } from "@mui/material";
 import SchoolIcon from '@mui/icons-material/School';
 import SearchIcon from '@mui/icons-material/Search';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
-import PersonIcon from '@mui/icons-material/Person';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import SpeedIcon from '@mui/icons-material/Speed';
 import SecurityIcon from '@mui/icons-material/Security';
-import SupportAgentIcon from '@mui/icons-material/SupportAgent';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import FormatQuoteIcon from '@mui/icons-material/FormatQuote';
+import StarIcon from '@mui/icons-material/Star';
+import LockIcon from '@mui/icons-material/Lock';
+import CheckIcon from '@mui/icons-material/Check';
+import CloseIcon from '@mui/icons-material/Close';
+import EmailIcon from '@mui/icons-material/Email';
+import LinkedInIcon from '@mui/icons-material/LinkedIn';
+import TwitterIcon from '@mui/icons-material/Twitter';
+import InstagramIcon from '@mui/icons-material/Instagram';
 
 const HomePage = () => {
   const navigate = useNavigate();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const isSmall = useMediaQuery(theme.breakpoints.down('sm'));
 
   const stats = [
-    { value: "10,000+", label: "Scholarships" },
-    { value: "$50M+", label: "In Funding" },
-    { value: "95%", label: "Match Rate" },
-    { value: "50K+", label: "Students Helped" },
+    { value: "10,000+", label: "Verified Scholarships", icon: <SchoolIcon /> },
+    { value: "$50M+", label: "In Available Funding", icon: <TrendingUpIcon /> },
+    { value: "95%", label: "Match Accuracy", icon: <AutoAwesomeIcon /> },
+    { value: "50K+", label: "Students Matched", icon: <StarIcon /> },
   ];
 
   const features = [
     {
-      icon: <AutoAwesomeIcon sx={{ fontSize: 40 }} />,
+      icon: <AutoAwesomeIcon sx={{ fontSize: 32 }} />,
       title: "AI-Powered Matching",
-      description: "Our smart algorithm analyzes your profile and matches you with scholarships you're most likely to win."
+      description: "Our algorithm analyzes 20+ profile criteria to find scholarships you're most likely to win."
     },
     {
-      icon: <SpeedIcon sx={{ fontSize: 40 }} />,
-      title: "Save Hours of Research",
-      description: "Stop scrolling through thousands of scholarships. We curate the best matches for your unique profile."
+      icon: <SpeedIcon sx={{ fontSize: 32 }} />,
+      title: "Save 10+ Hours Weekly",
+      description: "Stop scrolling endlessly. Get a curated list of matches ranked by your win probability."
     },
     {
-      icon: <TrendingUpIcon sx={{ fontSize: 40 }} />,
-      title: "Track Your Progress",
-      description: "Monitor application deadlines, save favorites, and track your scholarship journey all in one place."
+      icon: <TrendingUpIcon sx={{ fontSize: 32 }} />,
+      title: "Track Everything",
+      description: "Deadline reminders, application status, saved favorites—all in one dashboard."
     },
     {
-      icon: <SecurityIcon sx={{ fontSize: 40 }} />,
-      title: "Verified Opportunities",
-      description: "Every scholarship is verified and updated regularly. No scams, no expired listings."
+      icon: <SecurityIcon sx={{ fontSize: 32 }} />,
+      title: "100% Verified",
+      description: "Every scholarship is vetted. No scams, no expired listings, no wasted applications."
     },
   ];
 
   const steps = [
     {
-      number: "01",
+      number: "1",
       title: "Create Your Profile",
-      description: "Tell us about your academics, interests, and background. It only takes 5 minutes."
+      description: "Answer questions about your academics, background, and interests. Takes just 5 minutes.",
+      highlight: "5 min setup"
     },
     {
-      number: "02",
-      title: "Get Matched",
-      description: "Our algorithm instantly finds scholarships that fit your unique profile and goals."
+      number: "2",
+      title: "Get Matched Instantly",
+      description: "Our AI analyzes your profile against 10,000+ scholarships and ranks your best matches.",
+      highlight: "AI-powered"
     },
     {
-      number: "03",
+      number: "3",
       title: "Apply & Win",
-      description: "Apply to your top matches with confidence. Track deadlines and maximize your chances."
+      description: "Focus on high-match scholarships. Track deadlines. Maximize your success rate.",
+      highlight: "95% accuracy"
     },
   ];
 
   const testimonials = [
     {
-      name: "Sarah M.",
-      role: "Stanford University, Class of 2026",
-      quote: "SortAid helped me find $25,000 in scholarships I never knew I qualified for. The matching is incredibly accurate!",
-      avatar: "S"
+      name: "Sarah Martinez",
+      role: "Stanford '26 | Won $25,000",
+      quote: "I was applying to random scholarships for months with no luck. SortAid matched me with 12 scholarships I actually qualified for—I won 3 of them!",
+      avatar: "S",
+      rating: 5
     },
     {
-      name: "Marcus J.",
+      name: "Marcus Johnson",
       role: "First-Generation Student",
-      quote: "As a first-gen student, I had no idea where to start. SortAid made the process so much easier and less overwhelming.",
-      avatar: "M"
+      quote: "As a first-gen student, I had no guidance. SortAid found scholarships specifically for students like me that I never knew existed.",
+      avatar: "M",
+      rating: 5
     },
     {
-      name: "Emily C.",
-      role: "High School Senior",
-      quote: "I applied to 15 scholarships through SortAid and won 4 of them! The match scores really helped me prioritize.",
-      avatar: "E"
+      name: "Emily Chen",
+      role: "High School Senior | Won $15,000",
+      quote: "The match scores saved me so much time. I only applied to scholarships with 80%+ match rates and won 4 out of 15 applications!",
+      avatar: "E",
+      rating: 5
     },
   ];
 
-  const benefits = [
-    "Personalized scholarship matches based on 20+ criteria",
-    "Real-time deadline tracking and reminders",
-    "No duplicate or expired scholarships",
-    "Free to use - forever",
-    "New scholarships added daily",
-    "Works for high school, undergrad, and grad students",
+  const pricingPlans = [
+    {
+      name: "Free",
+      price: "$0",
+      period: "forever",
+      description: "Get started with scholarship matching",
+      features: [
+        { text: "View up to 10 matched scholarships", included: true },
+        { text: "Basic profile matching", included: true },
+        { text: "Email deadline reminders", included: true },
+        { text: "Unlimited scholarship views", included: false },
+        { text: "Advanced match scoring", included: false },
+        { text: "Priority support", included: false },
+      ],
+      cta: "Start Free",
+      highlighted: false
+    },
+    {
+      name: "Premium",
+      price: "$9.99",
+      period: "/month",
+      description: "Unlock your full scholarship potential",
+      features: [
+        { text: "Unlimited matched scholarships", included: true },
+        { text: "Advanced AI matching (20+ criteria)", included: true },
+        { text: "Smart deadline reminders", included: true },
+        { text: "Application tracking dashboard", included: true },
+        { text: "Detailed match breakdowns", included: true },
+        { text: "Priority email support", included: true },
+      ],
+      cta: "Start 7-Day Free Trial",
+      highlighted: true,
+      badge: "Most Popular"
+    },
   ];
+
+  // Accessible color palette with proper contrast ratios
+  const colors = {
+    primary: '#1565c0',
+    primaryDark: '#0d47a1',
+    primaryLight: '#e3f2fd',
+    accent: '#00897b',
+    accentLight: '#e0f2f1',
+    textOnDark: '#ffffff',
+    textOnLight: '#1a1a2e',
+    textMuted: '#5f6368',
+    success: '#2e7d32',
+    warning: '#f57c00',
+    surface: '#ffffff',
+    background: '#f8fafc',
+    footerBg: '#1a1a2e',
+  };
 
   return (
-    <Box sx={{ overflow: 'hidden' }}>
-      {/* Hero Section */}
+    <Box component="main" sx={{ overflow: 'hidden' }}>
+      {/* Skip Navigation Link - Accessibility */}
       <Box
+        component="a"
+        href="#main-content"
         sx={{
-          background: 'linear-gradient(135deg, #1976d2 0%, #1565c0 50%, #0d47a1 100%)',
-          color: 'white',
-          pt: { xs: 8, md: 12 },
-          pb: { xs: 10, md: 16 },
-          position: 'relative',
-          '&::after': {
-            content: '""',
-            position: 'absolute',
-            bottom: 0,
+          position: 'absolute',
+          left: '-9999px',
+          top: 'auto',
+          width: '1px',
+          height: '1px',
+          overflow: 'hidden',
+          '&:focus': {
+            position: 'fixed',
+            top: 0,
             left: 0,
-            right: 0,
-            height: '120px',
-            background: 'linear-gradient(to top right, #fff 50%, transparent 50%)',
+            width: 'auto',
+            height: 'auto',
+            padding: '16px 24px',
+            bgcolor: colors.primary,
+            color: colors.textOnDark,
+            zIndex: 9999,
+            fontSize: '1rem',
+            fontWeight: 600,
+            textDecoration: 'none',
+            outline: '3px solid #ffd700',
           }
+        }}
+      >
+        Skip to main content
+      </Box>
+
+      {/* Hero Section - Optimized for conversion */}
+      <Box
+        id="main-content"
+        component="section"
+        aria-labelledby="hero-heading"
+        sx={{
+          background: `linear-gradient(135deg, ${colors.primary} 0%, ${colors.primaryDark} 100%)`,
+          color: colors.textOnDark,
+          pt: { xs: 6, md: 10 },
+          pb: { xs: 12, md: 18 },
+          position: 'relative',
         }}
       >
         <Container maxWidth="lg">
           <Grid container spacing={4} alignItems="center">
             <Grid item xs={12} md={7}>
+              {/* Trust Signal Badge */}
               <Chip
-                label="Trusted by 50,000+ students"
+                icon={<StarIcon sx={{ color: '#ffd700 !important', fontSize: 18 }} />}
+                label="Trusted by 50,000+ students nationwide"
                 sx={{
-                  bgcolor: 'rgba(255,255,255,0.2)',
-                  color: 'white',
+                  bgcolor: 'rgba(255,255,255,0.15)',
+                  color: colors.textOnDark,
                   mb: 3,
-                  fontWeight: 500
+                  fontWeight: 600,
+                  fontSize: '0.875rem',
+                  py: 0.5,
+                  '& .MuiChip-icon': { ml: 1 }
                 }}
               />
+
+              {/* Main Headline - Clear Value Proposition */}
               <Typography
+                id="hero-heading"
                 variant="h1"
+                component="h1"
                 sx={{
-                  fontSize: { xs: '2.5rem', md: '3.5rem', lg: '4rem' },
+                  fontSize: { xs: '2.25rem', sm: '2.75rem', md: '3.25rem', lg: '3.75rem' },
                   fontWeight: 800,
-                  lineHeight: 1.1,
-                  mb: 3
+                  lineHeight: 1.15,
+                  mb: 2.5,
+                  letterSpacing: '-0.02em',
                 }}
               >
-                Find Scholarships
+                Stop Guessing.
                 <br />
-                <Box component="span" sx={{ color: '#90caf9' }}>
-                  You Actually Qualify For
+                <Box
+                  component="span"
+                  sx={{
+                    color: '#bbdefb', // WCAG AA compliant on dark blue (4.5:1+)
+                  }}
+                >
+                  Start Winning Scholarships.
                 </Box>
               </Typography>
+
+              {/* Subheadline with specific benefit */}
               <Typography
-                variant="h5"
+                variant="h2"
+                component="p"
                 sx={{
                   mb: 4,
-                  opacity: 0.9,
                   fontWeight: 400,
+                  fontSize: { xs: '1.1rem', md: '1.35rem' },
                   lineHeight: 1.6,
-                  maxWidth: 540
+                  maxWidth: 520,
+                  opacity: 0.95,
                 }}
               >
-                Stop wasting time on scholarships you won't win. Our AI matches you with opportunities tailored to your unique profile.
+                Our AI matches you with scholarships you'll actually qualify for—saving
+                you <strong>10+ hours</strong> of research every week.
               </Typography>
-              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+
+              {/* Primary CTA - High contrast, clear action */}
+              <Stack
+                direction={{ xs: 'column', sm: 'row' }}
+                spacing={2}
+                sx={{ mb: 3 }}
+              >
                 <Button
                   variant="contained"
                   size="large"
                   onClick={() => navigate("/register")}
+                  endIcon={<ArrowForwardIcon />}
                   sx={{
-                    bgcolor: 'white',
-                    color: 'primary.main',
-                    px: 4,
-                    py: 1.5,
+                    bgcolor: colors.textOnDark,
+                    color: colors.primaryDark,
+                    px: { xs: 3, sm: 4 },
+                    py: 1.75,
                     fontSize: '1.1rem',
-                    fontWeight: 600,
+                    fontWeight: 700,
+                    borderRadius: 2,
+                    boxShadow: '0 4px 14px rgba(0,0,0,0.25)',
                     '&:hover': {
                       bgcolor: '#f5f5f5',
-                    }
+                      transform: 'translateY(-2px)',
+                      boxShadow: '0 6px 20px rgba(0,0,0,0.3)',
+                    },
+                    '&:focus-visible': {
+                      outline: '3px solid #ffd700',
+                      outlineOffset: '2px',
+                    },
+                    transition: 'all 0.2s ease',
                   }}
-                  endIcon={<ArrowForwardIcon />}
                 >
-                  Get Started Free
+                  Start Free Trial
                 </Button>
                 <Button
                   variant="outlined"
                   size="large"
-                  onClick={() => navigate("/scholarships")}
+                  onClick={() => {
+                    document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' });
+                  }}
                   sx={{
-                    borderColor: 'rgba(255,255,255,0.5)',
-                    color: 'white',
-                    px: 4,
-                    py: 1.5,
+                    borderColor: 'rgba(255,255,255,0.6)',
+                    borderWidth: 2,
+                    color: colors.textOnDark,
+                    px: { xs: 3, sm: 4 },
+                    py: 1.75,
                     fontSize: '1.1rem',
+                    fontWeight: 600,
+                    borderRadius: 2,
                     '&:hover': {
-                      borderColor: 'white',
+                      borderColor: colors.textOnDark,
                       bgcolor: 'rgba(255,255,255,0.1)',
-                    }
+                      borderWidth: 2,
+                    },
+                    '&:focus-visible': {
+                      outline: '3px solid #ffd700',
+                      outlineOffset: '2px',
+                    },
                   }}
                 >
-                  Browse Scholarships
+                  See How It Works
                 </Button>
               </Stack>
+
+              {/* Trust Signals */}
+              <Stack
+                direction="row"
+                spacing={3}
+                flexWrap="wrap"
+                sx={{ gap: 1 }}
+              >
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+                  <CheckCircleIcon sx={{ fontSize: 18, color: '#81c784' }} />
+                  <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                    No credit card required
+                  </Typography>
+                </Box>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+                  <CheckCircleIcon sx={{ fontSize: 18, color: '#81c784' }} />
+                  <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                    5-minute setup
+                  </Typography>
+                </Box>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+                  <CheckCircleIcon sx={{ fontSize: 18, color: '#81c784' }} />
+                  <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                    Cancel anytime
+                  </Typography>
+                </Box>
+              </Stack>
             </Grid>
-            <Grid item xs={12} md={5} sx={{ display: { xs: 'none', md: 'block' } }}>
+
+            {/* Hero Visual - Scholarship Preview Cards */}
+            <Grid item xs={12} md={5}>
               <Box
                 sx={{
                   bgcolor: 'rgba(255,255,255,0.1)',
                   borderRadius: 4,
-                  p: 4,
+                  p: { xs: 2, md: 3 },
                   backdropFilter: 'blur(10px)',
+                  border: '1px solid rgba(255,255,255,0.2)',
                 }}
+                role="img"
+                aria-label="Example scholarship matches showing 94%, 87%, and 82% match scores"
               >
+                <Typography
+                  variant="overline"
+                  sx={{
+                    color: 'rgba(255,255,255,0.8)',
+                    fontWeight: 600,
+                    letterSpacing: 1.5,
+                    mb: 2,
+                    display: 'block'
+                  }}
+                >
+                  Your Top Matches
+                </Typography>
                 <Stack spacing={2}>
                   {[
-                    { score: 94, name: "STEM Excellence Award", amount: "$10,000" },
-                    { score: 87, name: "First-Gen Scholars Fund", amount: "$5,000" },
-                    { score: 82, name: "Community Leaders Grant", amount: "$7,500" },
+                    { score: 94, name: "STEM Excellence Award", amount: "$10,000", deadline: "Mar 15" },
+                    { score: 87, name: "First-Gen Scholars Fund", amount: "$5,000", deadline: "Apr 1" },
+                    { score: 82, name: "Community Leaders Grant", amount: "$7,500", deadline: "Apr 30" },
                   ].map((item, idx) => (
                     <Paper
                       key={idx}
+                      elevation={0}
                       sx={{
                         p: 2,
                         display: 'flex',
                         alignItems: 'center',
                         gap: 2,
-                        bgcolor: 'white',
-                        borderRadius: 2
+                        bgcolor: colors.surface,
+                        borderRadius: 2,
+                        transition: 'transform 0.2s',
+                        '&:hover': {
+                          transform: 'translateX(4px)',
+                        }
                       }}
                     >
                       <Box
                         sx={{
-                          width: 50,
-                          height: 50,
+                          width: 52,
+                          height: 52,
                           borderRadius: '50%',
-                          bgcolor: item.score >= 90 ? '#e8f5e9' : item.score >= 80 ? '#fff3e0' : '#ffebee',
+                          bgcolor: item.score >= 90 ? '#e8f5e9' : item.score >= 80 ? '#fff8e1' : '#ffebee',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
                           fontWeight: 700,
-                          color: item.score >= 90 ? '#2e7d32' : item.score >= 80 ? '#ef6c00' : '#c62828',
+                          fontSize: '0.95rem',
+                          color: item.score >= 90 ? colors.success : item.score >= 80 ? colors.warning : '#c62828',
+                          flexShrink: 0,
                         }}
+                        aria-label={`${item.score}% match`}
                       >
                         {item.score}%
                       </Box>
-                      <Box sx={{ flex: 1 }}>
-                        <Typography variant="subtitle2" fontWeight={600} color="text.primary">
+                      <Box sx={{ flex: 1, minWidth: 0 }}>
+                        <Typography
+                          variant="subtitle2"
+                          fontWeight={600}
+                          color="text.primary"
+                          sx={{
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap'
+                          }}
+                        >
                           {item.name}
                         </Typography>
-                        <Typography variant="body2" color="success.main" fontWeight={600}>
-                          {item.amount}
-                        </Typography>
+                        <Stack direction="row" spacing={1.5} alignItems="center">
+                          <Typography variant="body2" color="success.main" fontWeight={700}>
+                            {item.amount}
+                          </Typography>
+                          <Typography variant="caption" color="text.secondary">
+                            Due {item.deadline}
+                          </Typography>
+                        </Stack>
                       </Box>
                     </Paper>
                   ))}
@@ -255,111 +449,127 @@ const HomePage = () => {
             </Grid>
           </Grid>
         </Container>
+
+        {/* Decorative wave divider */}
+        <Box
+          sx={{
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            height: { xs: 60, md: 100 },
+            bgcolor: colors.background,
+            clipPath: 'ellipse(75% 100% at 50% 100%)',
+          }}
+        />
       </Box>
 
-      {/* Stats Section */}
-      <Container maxWidth="lg" sx={{ mt: -6, position: 'relative', zIndex: 1 }}>
-        <Paper elevation={3} sx={{ borderRadius: 4, py: 4, px: 2 }}>
-          <Grid container spacing={2} justifyContent="center">
-            {stats.map((stat, idx) => (
-              <Grid item xs={6} md={3} key={idx}>
-                <Box textAlign="center">
-                  <Typography
-                    variant="h3"
+      {/* Stats Section - Social Proof */}
+      <Box
+        component="section"
+        aria-label="Platform statistics"
+        sx={{
+          bgcolor: colors.background,
+          pt: { xs: 2, md: 4 },
+          pb: { xs: 6, md: 10 },
+        }}
+      >
+        <Container maxWidth="lg">
+          <Paper
+            elevation={0}
+            sx={{
+              borderRadius: 4,
+              py: { xs: 3, md: 4 },
+              px: { xs: 2, md: 4 },
+              border: '1px solid',
+              borderColor: 'grey.200',
+              bgcolor: colors.surface,
+            }}
+          >
+            <Grid container spacing={3} justifyContent="center">
+              {stats.map((stat, idx) => (
+                <Grid item xs={6} md={3} key={idx}>
+                  <Box
+                    textAlign="center"
                     sx={{
-                      fontWeight: 800,
-                      color: 'primary.main',
-                      fontSize: { xs: '1.8rem', md: '2.5rem' }
+                      p: { xs: 1, md: 2 },
                     }}
                   >
-                    {stat.value}
-                  </Typography>
-                  <Typography variant="body1" color="text.secondary">
-                    {stat.label}
-                  </Typography>
-                </Box>
-              </Grid>
-            ))}
-          </Grid>
-        </Paper>
-      </Container>
-
-      {/* Features Section */}
-      <Box sx={{ py: { xs: 8, md: 12 }, bgcolor: '#fafafa' }}>
-        <Container maxWidth="lg">
-          <Box textAlign="center" mb={8}>
-            <Typography
-              variant="h2"
-              sx={{
-                fontWeight: 700,
-                mb: 2,
-                fontSize: { xs: '2rem', md: '2.75rem' }
-              }}
-            >
-              Why Students Love SortAid
-            </Typography>
-            <Typography variant="h6" color="text.secondary" sx={{ maxWidth: 600, mx: 'auto' }}>
-              We've helped thousands of students find and win scholarships. Here's how we make it happen.
-            </Typography>
-          </Box>
-
-          <Grid container spacing={4}>
-            {features.map((feature, idx) => (
-              <Grid item xs={12} sm={6} md={3} key={idx}>
-                <Card
-                  sx={{
-                    height: '100%',
-                    textAlign: 'center',
-                    p: 2,
-                    transition: 'transform 0.2s, box-shadow 0.2s',
-                    '&:hover': {
-                      transform: 'translateY(-8px)',
-                      boxShadow: 6,
-                    }
-                  }}
-                >
-                  <CardContent>
                     <Box
                       sx={{
-                        color: 'primary.main',
-                        mb: 2,
-                        display: 'inline-flex',
-                        p: 2,
-                        borderRadius: '50%',
-                        bgcolor: 'primary.50',
+                        color: colors.primary,
+                        mb: 1,
+                        '& svg': { fontSize: { xs: 28, md: 36 } }
                       }}
                     >
-                      {feature.icon}
+                      {stat.icon}
                     </Box>
-                    <Typography variant="h6" fontWeight={600} gutterBottom>
-                      {feature.title}
+                    <Typography
+                      variant="h3"
+                      component="p"
+                      sx={{
+                        fontWeight: 800,
+                        color: colors.textOnLight,
+                        fontSize: { xs: '1.75rem', md: '2.5rem' },
+                        lineHeight: 1.2,
+                      }}
+                    >
+                      {stat.value}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {feature.description}
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        color: colors.textMuted,
+                        fontWeight: 500,
+                        mt: 0.5,
+                      }}
+                    >
+                      {stat.label}
                     </Typography>
-                  </CardContent>
-                </Card>
-              </Grid>
-            ))}
-          </Grid>
+                  </Box>
+                </Grid>
+              ))}
+            </Grid>
+          </Paper>
         </Container>
       </Box>
 
       {/* How It Works Section */}
-      <Box sx={{ py: { xs: 8, md: 12 } }}>
+      <Box
+        id="how-it-works"
+        component="section"
+        aria-labelledby="how-it-works-heading"
+        sx={{
+          py: { xs: 8, md: 12 },
+          bgcolor: colors.surface,
+          scrollMarginTop: '80px',
+        }}
+      >
         <Container maxWidth="lg">
-          <Box textAlign="center" mb={8}>
+          <Box textAlign="center" mb={{ xs: 6, md: 8 }}>
             <Typography
+              id="how-it-works-heading"
               variant="h2"
+              component="h2"
               sx={{
                 fontWeight: 700,
                 mb: 2,
-                fontSize: { xs: '2rem', md: '2.75rem' }
+                fontSize: { xs: '1.75rem', md: '2.5rem' },
+                color: colors.textOnLight,
               }}
             >
               How It Works
             </Typography>
-            <Typography variant="h6" color="text.secondary">
+            <Typography
+              variant="h6"
+              component="p"
+              sx={{
+                color: colors.textMuted,
+                maxWidth: 600,
+                mx: 'auto',
+                fontWeight: 400,
+              }}
+            >
               Get matched with scholarships in three simple steps
             </Typography>
           </Box>
@@ -367,116 +577,445 @@ const HomePage = () => {
           <Grid container spacing={4} alignItems="stretch">
             {steps.map((step, idx) => (
               <Grid item xs={12} md={4} key={idx}>
-                <Box
+                <Card
+                  elevation={0}
                   sx={{
-                    textAlign: 'center',
-                    p: 4,
                     height: '100%',
+                    textAlign: 'center',
+                    p: { xs: 3, md: 4 },
+                    borderRadius: 4,
+                    border: '2px solid',
+                    borderColor: 'grey.100',
                     position: 'relative',
+                    transition: 'all 0.3s ease',
+                    '&:hover': {
+                      borderColor: colors.primary,
+                      transform: 'translateY(-4px)',
+                      boxShadow: '0 12px 24px rgba(21, 101, 192, 0.12)',
+                    },
+                    '&:focus-within': {
+                      borderColor: colors.primary,
+                      outline: '3px solid',
+                      outlineColor: colors.primaryLight,
+                    }
                   }}
                 >
-                  <Typography
+                  {/* Step number */}
+                  <Box
                     sx={{
-                      fontSize: '5rem',
+                      width: 56,
+                      height: 56,
+                      borderRadius: '50%',
+                      bgcolor: colors.primaryLight,
+                      color: colors.primary,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '1.5rem',
                       fontWeight: 800,
-                      color: 'primary.100',
-                      lineHeight: 1,
-                      mb: 2
+                      mx: 'auto',
+                      mb: 3,
                     }}
+                    aria-hidden="true"
                   >
                     {step.number}
-                  </Typography>
-                  <Typography variant="h5" fontWeight={600} gutterBottom>
+                  </Box>
+
+                  {/* Highlight chip */}
+                  <Chip
+                    label={step.highlight}
+                    size="small"
+                    sx={{
+                      bgcolor: colors.accentLight,
+                      color: colors.accent,
+                      fontWeight: 600,
+                      mb: 2,
+                    }}
+                  />
+
+                  <Typography
+                    variant="h5"
+                    component="h3"
+                    fontWeight={700}
+                    gutterBottom
+                    sx={{ color: colors.textOnLight }}
+                  >
                     {step.title}
                   </Typography>
-                  <Typography variant="body1" color="text.secondary">
+                  <Typography
+                    variant="body1"
+                    sx={{
+                      color: colors.textMuted,
+                      lineHeight: 1.7,
+                    }}
+                  >
                     {step.description}
                   </Typography>
+
+                  {/* Connector arrow (desktop only) */}
                   {idx < steps.length - 1 && !isMobile && (
                     <ArrowForwardIcon
+                      aria-hidden="true"
                       sx={{
                         position: 'absolute',
-                        right: -20,
-                        top: '40%',
-                        fontSize: 40,
-                        color: 'grey.300'
+                        right: -28,
+                        top: '50%',
+                        transform: 'translateY(-50%)',
+                        fontSize: 32,
+                        color: 'grey.300',
+                        zIndex: 1,
                       }}
                     />
                   )}
-                </Box>
+                </Card>
               </Grid>
             ))}
           </Grid>
         </Container>
       </Box>
 
-      {/* Benefits Section */}
-      <Box sx={{ py: { xs: 8, md: 12 }, bgcolor: 'primary.main', color: 'white' }}>
+      {/* Features Section */}
+      <Box
+        component="section"
+        aria-labelledby="features-heading"
+        sx={{
+          py: { xs: 8, md: 12 },
+          bgcolor: colors.background,
+        }}
+      >
         <Container maxWidth="lg">
-          <Grid container spacing={6} alignItems="center">
-            <Grid item xs={12} md={6}>
-              <Typography
-                variant="h2"
-                sx={{
-                  fontWeight: 700,
-                  mb: 3,
-                  fontSize: { xs: '2rem', md: '2.75rem' }
-                }}
-              >
-                Everything You Need to Fund Your Education
-              </Typography>
-              <Typography variant="h6" sx={{ opacity: 0.9, mb: 4 }}>
-                SortAid gives you the tools and insights to maximize your scholarship success.
-              </Typography>
-              <Button
-                variant="contained"
-                size="large"
-                onClick={() => navigate("/register")}
-                sx={{
-                  bgcolor: 'white',
-                  color: 'primary.main',
-                  px: 4,
-                  py: 1.5,
-                  '&:hover': {
-                    bgcolor: '#f5f5f5',
-                  }
-                }}
-              >
-                Start Finding Scholarships
-              </Button>
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <Grid container spacing={2}>
-                {benefits.map((benefit, idx) => (
-                  <Grid item xs={12} sm={6} key={idx}>
-                    <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.5 }}>
-                      <CheckCircleIcon sx={{ color: '#90caf9', mt: 0.3 }} />
-                      <Typography variant="body1">{benefit}</Typography>
-                    </Box>
-                  </Grid>
-                ))}
+          <Box textAlign="center" mb={{ xs: 6, md: 8 }}>
+            <Typography
+              id="features-heading"
+              variant="h2"
+              component="h2"
+              sx={{
+                fontWeight: 700,
+                mb: 2,
+                fontSize: { xs: '1.75rem', md: '2.5rem' },
+                color: colors.textOnLight,
+              }}
+            >
+              Why Students Choose SortAid
+            </Typography>
+            <Typography
+              variant="h6"
+              component="p"
+              sx={{
+                color: colors.textMuted,
+                maxWidth: 600,
+                mx: 'auto',
+                fontWeight: 400,
+              }}
+            >
+              We've helped thousands of students find and win scholarships. Here's how.
+            </Typography>
+          </Box>
+
+          <Grid container spacing={3}>
+            {features.map((feature, idx) => (
+              <Grid item xs={12} sm={6} md={3} key={idx}>
+                <Card
+                  elevation={0}
+                  sx={{
+                    height: '100%',
+                    p: 3,
+                    borderRadius: 3,
+                    bgcolor: colors.surface,
+                    border: '1px solid',
+                    borderColor: 'grey.200',
+                    transition: 'all 0.2s ease',
+                    '&:hover': {
+                      transform: 'translateY(-4px)',
+                      boxShadow: '0 8px 24px rgba(0,0,0,0.08)',
+                      borderColor: colors.primary,
+                    },
+                  }}
+                >
+                  <Box
+                    sx={{
+                      color: colors.primary,
+                      mb: 2,
+                      display: 'inline-flex',
+                      p: 1.5,
+                      borderRadius: 2,
+                      bgcolor: colors.primaryLight,
+                    }}
+                    aria-hidden="true"
+                  >
+                    {feature.icon}
+                  </Box>
+                  <Typography
+                    variant="h6"
+                    component="h3"
+                    fontWeight={700}
+                    gutterBottom
+                    sx={{
+                      color: colors.textOnLight,
+                      fontSize: '1.1rem',
+                    }}
+                  >
+                    {feature.title}
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      color: colors.textMuted,
+                      lineHeight: 1.7,
+                    }}
+                  >
+                    {feature.description}
+                  </Typography>
+                </Card>
               </Grid>
-            </Grid>
+            ))}
           </Grid>
         </Container>
       </Box>
 
-      {/* Testimonials Section */}
-      <Box sx={{ py: { xs: 8, md: 12 } }}>
-        <Container maxWidth="lg">
-          <Box textAlign="center" mb={8}>
+      {/* Pricing Section */}
+      <Box
+        id="pricing"
+        component="section"
+        aria-labelledby="pricing-heading"
+        sx={{
+          py: { xs: 8, md: 12 },
+          bgcolor: colors.surface,
+        }}
+      >
+        <Container maxWidth="md">
+          <Box textAlign="center" mb={{ xs: 6, md: 8 }}>
             <Typography
+              id="pricing-heading"
               variant="h2"
+              component="h2"
               sx={{
                 fontWeight: 700,
                 mb: 2,
-                fontSize: { xs: '2rem', md: '2.75rem' }
+                fontSize: { xs: '1.75rem', md: '2.5rem' },
+                color: colors.textOnLight,
               }}
             >
-              Students Love SortAid
+              Simple, Transparent Pricing
             </Typography>
-            <Typography variant="h6" color="text.secondary">
-              See what our community has to say
+            <Typography
+              variant="h6"
+              component="p"
+              sx={{
+                color: colors.textMuted,
+                maxWidth: 500,
+                mx: 'auto',
+                fontWeight: 400,
+              }}
+            >
+              Start free and upgrade when you're ready to unlock your full potential
+            </Typography>
+          </Box>
+
+          <Grid container spacing={4} justifyContent="center">
+            {pricingPlans.map((plan, idx) => (
+              <Grid item xs={12} sm={6} key={idx}>
+                <Card
+                  elevation={0}
+                  sx={{
+                    height: '100%',
+                    p: 4,
+                    borderRadius: 4,
+                    border: '2px solid',
+                    borderColor: plan.highlighted ? colors.primary : 'grey.200',
+                    position: 'relative',
+                    bgcolor: plan.highlighted ? colors.primaryLight : colors.surface,
+                    transition: 'transform 0.2s',
+                    '&:hover': {
+                      transform: 'translateY(-4px)',
+                    }
+                  }}
+                >
+                  {plan.badge && (
+                    <Chip
+                      label={plan.badge}
+                      size="small"
+                      sx={{
+                        position: 'absolute',
+                        top: -12,
+                        left: '50%',
+                        transform: 'translateX(-50%)',
+                        bgcolor: colors.primary,
+                        color: colors.textOnDark,
+                        fontWeight: 700,
+                        px: 1,
+                      }}
+                    />
+                  )}
+
+                  <Typography
+                    variant="h5"
+                    component="h3"
+                    fontWeight={700}
+                    gutterBottom
+                    sx={{ color: colors.textOnLight }}
+                  >
+                    {plan.name}
+                  </Typography>
+
+                  <Box sx={{ mb: 2 }}>
+                    <Typography
+                      component="span"
+                      sx={{
+                        fontSize: '3rem',
+                        fontWeight: 800,
+                        color: colors.textOnLight,
+                      }}
+                    >
+                      {plan.price}
+                    </Typography>
+                    <Typography
+                      component="span"
+                      sx={{ color: colors.textMuted }}
+                    >
+                      {plan.period}
+                    </Typography>
+                  </Box>
+
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      color: colors.textMuted,
+                      mb: 3,
+                    }}
+                  >
+                    {plan.description}
+                  </Typography>
+
+                  <Divider sx={{ my: 3 }} />
+
+                  <Stack spacing={2} sx={{ mb: 4 }}>
+                    {plan.features.map((feature, fIdx) => (
+                      <Box
+                        key={fIdx}
+                        sx={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 1.5,
+                        }}
+                      >
+                        {feature.included ? (
+                          <CheckIcon
+                            sx={{
+                              fontSize: 20,
+                              color: colors.success,
+                              flexShrink: 0,
+                            }}
+                          />
+                        ) : (
+                          <CloseIcon
+                            sx={{
+                              fontSize: 20,
+                              color: 'grey.400',
+                              flexShrink: 0,
+                            }}
+                          />
+                        )}
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            color: feature.included ? colors.textOnLight : colors.textMuted,
+                          }}
+                        >
+                          {feature.text}
+                        </Typography>
+                      </Box>
+                    ))}
+                  </Stack>
+
+                  <Button
+                    variant={plan.highlighted ? "contained" : "outlined"}
+                    fullWidth
+                    size="large"
+                    onClick={() => navigate("/register")}
+                    sx={{
+                      py: 1.5,
+                      fontWeight: 700,
+                      borderRadius: 2,
+                      ...(plan.highlighted ? {
+                        bgcolor: colors.primary,
+                        '&:hover': {
+                          bgcolor: colors.primaryDark,
+                        }
+                      } : {
+                        borderColor: colors.primary,
+                        color: colors.primary,
+                        borderWidth: 2,
+                        '&:hover': {
+                          borderWidth: 2,
+                          bgcolor: colors.primaryLight,
+                        }
+                      }),
+                      '&:focus-visible': {
+                        outline: '3px solid',
+                        outlineColor: colors.primary,
+                        outlineOffset: '2px',
+                      }
+                    }}
+                  >
+                    {plan.cta}
+                  </Button>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
+
+          <Typography
+            variant="body2"
+            textAlign="center"
+            sx={{
+              mt: 4,
+              color: colors.textMuted,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 1,
+            }}
+          >
+            <LockIcon sx={{ fontSize: 16 }} />
+            Secure payment powered by Stripe. Cancel anytime.
+          </Typography>
+        </Container>
+      </Box>
+
+      {/* Testimonials Section */}
+      <Box
+        component="section"
+        aria-labelledby="testimonials-heading"
+        sx={{
+          py: { xs: 8, md: 12 },
+          bgcolor: colors.background,
+        }}
+      >
+        <Container maxWidth="lg">
+          <Box textAlign="center" mb={{ xs: 6, md: 8 }}>
+            <Typography
+              id="testimonials-heading"
+              variant="h2"
+              component="h2"
+              sx={{
+                fontWeight: 700,
+                mb: 2,
+                fontSize: { xs: '1.75rem', md: '2.5rem' },
+                color: colors.textOnLight,
+              }}
+            >
+              Real Students. Real Results.
+            </Typography>
+            <Typography
+              variant="h6"
+              component="p"
+              sx={{
+                color: colors.textMuted,
+                fontWeight: 400,
+              }}
+            >
+              See how SortAid has helped students win thousands in scholarships
             </Typography>
           </Box>
 
@@ -484,47 +1023,85 @@ const HomePage = () => {
             {testimonials.map((testimonial, idx) => (
               <Grid item xs={12} md={4} key={idx}>
                 <Card
+                  elevation={0}
                   sx={{
                     height: '100%',
-                    p: 3,
+                    p: 4,
+                    borderRadius: 4,
+                    bgcolor: colors.surface,
+                    border: '1px solid',
+                    borderColor: 'grey.200',
                     position: 'relative',
-                    bgcolor: idx === 1 ? 'primary.50' : 'white',
                   }}
                 >
+                  {/* Star Rating */}
+                  <Stack direction="row" spacing={0.5} sx={{ mb: 2 }}>
+                    {[...Array(testimonial.rating)].map((_, i) => (
+                      <StarIcon
+                        key={i}
+                        sx={{ fontSize: 20, color: '#ffc107' }}
+                        aria-hidden="true"
+                      />
+                    ))}
+                  </Stack>
+                  <Typography
+                    variant="srOnly"
+                    component="span"
+                  >
+                    {testimonial.rating} out of 5 stars
+                  </Typography>
+
                   <FormatQuoteIcon
+                    aria-hidden="true"
                     sx={{
                       position: 'absolute',
-                      top: 16,
-                      right: 16,
+                      top: 20,
+                      right: 20,
                       fontSize: 40,
-                      color: 'grey.200'
+                      color: 'grey.100',
                     }}
                   />
-                  <CardContent>
-                    <Typography
-                      variant="body1"
+
+                  <Typography
+                    variant="body1"
+                    sx={{
+                      mb: 3,
+                      color: colors.textOnLight,
+                      lineHeight: 1.8,
+                      fontStyle: 'italic',
+                    }}
+                  >
+                    "{testimonial.quote}"
+                  </Typography>
+
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                    <Avatar
                       sx={{
-                        mb: 3,
-                        fontStyle: 'italic',
-                        lineHeight: 1.8
+                        bgcolor: colors.primary,
+                        width: 48,
+                        height: 48,
+                        fontWeight: 700,
                       }}
+                      aria-hidden="true"
                     >
-                      "{testimonial.quote}"
-                    </Typography>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                      <Avatar sx={{ bgcolor: 'primary.main' }}>
-                        {testimonial.avatar}
-                      </Avatar>
-                      <Box>
-                        <Typography variant="subtitle2" fontWeight={600}>
-                          {testimonial.name}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                          {testimonial.role}
-                        </Typography>
-                      </Box>
+                      {testimonial.avatar}
+                    </Avatar>
+                    <Box>
+                      <Typography
+                        variant="subtitle2"
+                        fontWeight={700}
+                        sx={{ color: colors.textOnLight }}
+                      >
+                        {testimonial.name}
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        sx={{ color: colors.textMuted }}
+                      >
+                        {testimonial.role}
+                      </Typography>
                     </Box>
-                  </CardContent>
+                  </Box>
                 </Card>
               </Grid>
             ))}
@@ -534,134 +1111,408 @@ const HomePage = () => {
 
       {/* Final CTA Section */}
       <Box
+        component="section"
+        aria-labelledby="final-cta-heading"
         sx={{
-          py: { xs: 8, md: 10 },
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-          color: 'white',
-          textAlign: 'center'
+          py: { xs: 8, md: 12 },
+          background: `linear-gradient(135deg, ${colors.primary} 0%, ${colors.primaryDark} 100%)`,
+          color: colors.textOnDark,
+          textAlign: 'center',
         }}
       >
         <Container maxWidth="md">
           <Typography
+            id="final-cta-heading"
             variant="h2"
+            component="h2"
             sx={{
               fontWeight: 700,
               mb: 3,
-              fontSize: { xs: '2rem', md: '2.75rem' }
+              fontSize: { xs: '1.75rem', md: '2.5rem' },
             }}
           >
-            Ready to Find Your Perfect Scholarship?
+            Ready to Find Scholarships You'll Actually Win?
           </Typography>
-          <Typography variant="h6" sx={{ opacity: 0.9, mb: 4, maxWidth: 600, mx: 'auto' }}>
-            Join 50,000+ students who have discovered scholarships they never knew existed. It's free, fast, and could change your future.
+          <Typography
+            variant="h6"
+            component="p"
+            sx={{
+              opacity: 0.95,
+              mb: 4,
+              maxWidth: 550,
+              mx: 'auto',
+              fontWeight: 400,
+              lineHeight: 1.7,
+            }}
+          >
+            Join 50,000+ students who stopped wasting time on scholarships they'd never
+            qualify for. Start your free trial today.
           </Typography>
-          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} justifyContent="center">
-            <Button
-              variant="contained"
-              size="large"
-              onClick={() => navigate("/register")}
-              sx={{
-                bgcolor: 'white',
-                color: '#764ba2',
-                px: 5,
-                py: 1.5,
-                fontSize: '1.1rem',
-                fontWeight: 600,
-                '&:hover': {
-                  bgcolor: '#f5f5f5',
-                }
-              }}
-              endIcon={<ArrowForwardIcon />}
-            >
-              Create Free Account
-            </Button>
-          </Stack>
-          <Typography variant="body2" sx={{ mt: 3, opacity: 0.8 }}>
-            No credit card required. Start finding scholarships in under 5 minutes.
+
+          <Button
+            variant="contained"
+            size="large"
+            onClick={() => navigate("/register")}
+            endIcon={<ArrowForwardIcon />}
+            sx={{
+              bgcolor: colors.textOnDark,
+              color: colors.primaryDark,
+              px: 5,
+              py: 2,
+              fontSize: '1.15rem',
+              fontWeight: 700,
+              borderRadius: 2,
+              boxShadow: '0 4px 14px rgba(0,0,0,0.25)',
+              '&:hover': {
+                bgcolor: '#f5f5f5',
+                transform: 'translateY(-2px)',
+                boxShadow: '0 6px 20px rgba(0,0,0,0.3)',
+              },
+              '&:focus-visible': {
+                outline: '3px solid #ffd700',
+                outlineOffset: '2px',
+              },
+              transition: 'all 0.2s ease',
+            }}
+          >
+            Start Your Free Trial
+          </Button>
+
+          <Typography
+            variant="body2"
+            sx={{
+              mt: 3,
+              opacity: 0.9,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 0.5,
+            }}
+          >
+            <CheckCircleIcon sx={{ fontSize: 16 }} />
+            No credit card required • 7-day free trial • Cancel anytime
           </Typography>
         </Container>
       </Box>
 
-      {/* Footer */}
-      <Box sx={{ bgcolor: '#1a1a2e', color: 'white', py: 6 }}>
+      {/* Footer - Semantic HTML & Accessible */}
+      <Box
+        component="footer"
+        role="contentinfo"
+        sx={{
+          bgcolor: colors.footerBg,
+          color: colors.textOnDark,
+          py: { xs: 6, md: 8 },
+        }}
+      >
         <Container maxWidth="lg">
           <Grid container spacing={4}>
+            {/* Brand Column */}
             <Grid item xs={12} md={4}>
-              <Typography variant="h5" fontWeight={700} gutterBottom>
+              <Typography
+                variant="h5"
+                component="p"
+                fontWeight={800}
+                gutterBottom
+                sx={{ letterSpacing: '-0.02em' }}
+              >
                 SortAid
               </Typography>
-              <Typography variant="body2" sx={{ opacity: 0.7, mb: 2 }}>
+              <Typography
+                variant="body2"
+                sx={{
+                  opacity: 0.8,
+                  mb: 3,
+                  maxWidth: 280,
+                  lineHeight: 1.7,
+                }}
+              >
                 Making scholarship search smarter, faster, and more accessible for students everywhere.
               </Typography>
+
+              {/* Social Links */}
+              <Stack direction="row" spacing={1}>
+                <IconButton
+                  component="a"
+                  href="https://twitter.com/sortaid"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Follow us on Twitter"
+                  sx={{
+                    color: 'rgba(255,255,255,0.7)',
+                    '&:hover': { color: colors.textOnDark, bgcolor: 'rgba(255,255,255,0.1)' },
+                    '&:focus-visible': { outline: '2px solid #ffd700' },
+                  }}
+                >
+                  <TwitterIcon />
+                </IconButton>
+                <IconButton
+                  component="a"
+                  href="https://linkedin.com/company/sortaid"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Follow us on LinkedIn"
+                  sx={{
+                    color: 'rgba(255,255,255,0.7)',
+                    '&:hover': { color: colors.textOnDark, bgcolor: 'rgba(255,255,255,0.1)' },
+                    '&:focus-visible': { outline: '2px solid #ffd700' },
+                  }}
+                >
+                  <LinkedInIcon />
+                </IconButton>
+                <IconButton
+                  component="a"
+                  href="https://instagram.com/sortaid"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Follow us on Instagram"
+                  sx={{
+                    color: 'rgba(255,255,255,0.7)',
+                    '&:hover': { color: colors.textOnDark, bgcolor: 'rgba(255,255,255,0.1)' },
+                    '&:focus-visible': { outline: '2px solid #ffd700' },
+                  }}
+                >
+                  <InstagramIcon />
+                </IconButton>
+              </Stack>
             </Grid>
-            <Grid item xs={6} md={2}>
-              <Typography variant="subtitle2" fontWeight={600} gutterBottom>
+
+            {/* Navigation Columns */}
+            <Grid item xs={6} sm={4} md={2}>
+              <Typography
+                variant="subtitle2"
+                component="h3"
+                fontWeight={700}
+                gutterBottom
+                sx={{ textTransform: 'uppercase', letterSpacing: 1, fontSize: '0.75rem' }}
+              >
                 Product
               </Typography>
-              <Stack spacing={1}>
-                <Typography variant="body2" sx={{ opacity: 0.7, cursor: 'pointer', '&:hover': { opacity: 1 } }}>
-                  Features
-                </Typography>
-                <Typography variant="body2" sx={{ opacity: 0.7, cursor: 'pointer', '&:hover': { opacity: 1 } }}>
-                  Scholarships
-                </Typography>
-                <Typography variant="body2" sx={{ opacity: 0.7, cursor: 'pointer', '&:hover': { opacity: 1 } }}>
+              <Stack component="nav" aria-label="Product links" spacing={1.5}>
+                <Link
+                  component={RouterLink}
+                  to="/scholarships"
+                  sx={{
+                    color: 'rgba(255,255,255,0.7)',
+                    textDecoration: 'none',
+                    fontSize: '0.875rem',
+                    '&:hover': { color: colors.textOnDark },
+                    '&:focus-visible': { outline: '2px solid #ffd700', outlineOffset: 2 },
+                  }}
+                >
+                  Browse Scholarships
+                </Link>
+                <Link
+                  href="#pricing"
+                  sx={{
+                    color: 'rgba(255,255,255,0.7)',
+                    textDecoration: 'none',
+                    fontSize: '0.875rem',
+                    '&:hover': { color: colors.textOnDark },
+                    '&:focus-visible': { outline: '2px solid #ffd700', outlineOffset: 2 },
+                  }}
+                >
                   Pricing
-                </Typography>
+                </Link>
+                <Link
+                  href="#how-it-works"
+                  sx={{
+                    color: 'rgba(255,255,255,0.7)',
+                    textDecoration: 'none',
+                    fontSize: '0.875rem',
+                    '&:hover': { color: colors.textOnDark },
+                    '&:focus-visible': { outline: '2px solid #ffd700', outlineOffset: 2 },
+                  }}
+                >
+                  How It Works
+                </Link>
               </Stack>
             </Grid>
-            <Grid item xs={6} md={2}>
-              <Typography variant="subtitle2" fontWeight={600} gutterBottom>
+
+            <Grid item xs={6} sm={4} md={2}>
+              <Typography
+                variant="subtitle2"
+                component="h3"
+                fontWeight={700}
+                gutterBottom
+                sx={{ textTransform: 'uppercase', letterSpacing: 1, fontSize: '0.75rem' }}
+              >
                 Company
               </Typography>
-              <Stack spacing={1}>
-                <Typography variant="body2" sx={{ opacity: 0.7, cursor: 'pointer', '&:hover': { opacity: 1 } }}>
-                  About
-                </Typography>
-                <Typography variant="body2" sx={{ opacity: 0.7, cursor: 'pointer', '&:hover': { opacity: 1 } }}>
+              <Stack component="nav" aria-label="Company links" spacing={1.5}>
+                <Link
+                  href="/about"
+                  sx={{
+                    color: 'rgba(255,255,255,0.7)',
+                    textDecoration: 'none',
+                    fontSize: '0.875rem',
+                    '&:hover': { color: colors.textOnDark },
+                    '&:focus-visible': { outline: '2px solid #ffd700', outlineOffset: 2 },
+                  }}
+                >
+                  About Us
+                </Link>
+                <Link
+                  href="/blog"
+                  sx={{
+                    color: 'rgba(255,255,255,0.7)',
+                    textDecoration: 'none',
+                    fontSize: '0.875rem',
+                    '&:hover': { color: colors.textOnDark },
+                    '&:focus-visible': { outline: '2px solid #ffd700', outlineOffset: 2 },
+                  }}
+                >
                   Blog
-                </Typography>
-                <Typography variant="body2" sx={{ opacity: 0.7, cursor: 'pointer', '&:hover': { opacity: 1 } }}>
+                </Link>
+                <Link
+                  href="/careers"
+                  sx={{
+                    color: 'rgba(255,255,255,0.7)',
+                    textDecoration: 'none',
+                    fontSize: '0.875rem',
+                    '&:hover': { color: colors.textOnDark },
+                    '&:focus-visible': { outline: '2px solid #ffd700', outlineOffset: 2 },
+                  }}
+                >
                   Careers
-                </Typography>
+                </Link>
               </Stack>
             </Grid>
-            <Grid item xs={6} md={2}>
-              <Typography variant="subtitle2" fontWeight={600} gutterBottom>
+
+            <Grid item xs={6} sm={4} md={2}>
+              <Typography
+                variant="subtitle2"
+                component="h3"
+                fontWeight={700}
+                gutterBottom
+                sx={{ textTransform: 'uppercase', letterSpacing: 1, fontSize: '0.75rem' }}
+              >
                 Support
               </Typography>
-              <Stack spacing={1}>
-                <Typography variant="body2" sx={{ opacity: 0.7, cursor: 'pointer', '&:hover': { opacity: 1 } }}>
+              <Stack component="nav" aria-label="Support links" spacing={1.5}>
+                <Link
+                  href="/help"
+                  sx={{
+                    color: 'rgba(255,255,255,0.7)',
+                    textDecoration: 'none',
+                    fontSize: '0.875rem',
+                    '&:hover': { color: colors.textOnDark },
+                    '&:focus-visible': { outline: '2px solid #ffd700', outlineOffset: 2 },
+                  }}
+                >
                   Help Center
-                </Typography>
-                <Typography variant="body2" sx={{ opacity: 0.7, cursor: 'pointer', '&:hover': { opacity: 1 } }}>
-                  Contact
-                </Typography>
-                <Typography variant="body2" sx={{ opacity: 0.7, cursor: 'pointer', '&:hover': { opacity: 1 } }}>
-                  Privacy
-                </Typography>
+                </Link>
+                <Link
+                  href="/contact"
+                  sx={{
+                    color: 'rgba(255,255,255,0.7)',
+                    textDecoration: 'none',
+                    fontSize: '0.875rem',
+                    '&:hover': { color: colors.textOnDark },
+                    '&:focus-visible': { outline: '2px solid #ffd700', outlineOffset: 2 },
+                  }}
+                >
+                  Contact Us
+                </Link>
+                <Link
+                  href="mailto:support@sortaid.com"
+                  sx={{
+                    color: 'rgba(255,255,255,0.7)',
+                    textDecoration: 'none',
+                    fontSize: '0.875rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 0.5,
+                    '&:hover': { color: colors.textOnDark },
+                    '&:focus-visible': { outline: '2px solid #ffd700', outlineOffset: 2 },
+                  }}
+                >
+                  <EmailIcon sx={{ fontSize: 16 }} />
+                  Email Support
+                </Link>
               </Stack>
             </Grid>
-            <Grid item xs={6} md={2}>
-              <Typography variant="subtitle2" fontWeight={600} gutterBottom>
+
+            <Grid item xs={6} sm={4} md={2}>
+              <Typography
+                variant="subtitle2"
+                component="h3"
+                fontWeight={700}
+                gutterBottom
+                sx={{ textTransform: 'uppercase', letterSpacing: 1, fontSize: '0.75rem' }}
+              >
                 Legal
               </Typography>
-              <Stack spacing={1}>
-                <Typography variant="body2" sx={{ opacity: 0.7, cursor: 'pointer', '&:hover': { opacity: 1 } }}>
-                  Terms
-                </Typography>
-                <Typography variant="body2" sx={{ opacity: 0.7, cursor: 'pointer', '&:hover': { opacity: 1 } }}>
-                  Privacy
-                </Typography>
-                <Typography variant="body2" sx={{ opacity: 0.7, cursor: 'pointer', '&:hover': { opacity: 1 } }}>
-                  Cookies
-                </Typography>
+              <Stack component="nav" aria-label="Legal links" spacing={1.5}>
+                <Link
+                  href="/terms"
+                  sx={{
+                    color: 'rgba(255,255,255,0.7)',
+                    textDecoration: 'none',
+                    fontSize: '0.875rem',
+                    '&:hover': { color: colors.textOnDark },
+                    '&:focus-visible': { outline: '2px solid #ffd700', outlineOffset: 2 },
+                  }}
+                >
+                  Terms of Service
+                </Link>
+                <Link
+                  href="/privacy"
+                  sx={{
+                    color: 'rgba(255,255,255,0.7)',
+                    textDecoration: 'none',
+                    fontSize: '0.875rem',
+                    '&:hover': { color: colors.textOnDark },
+                    '&:focus-visible': { outline: '2px solid #ffd700', outlineOffset: 2 },
+                  }}
+                >
+                  Privacy Policy
+                </Link>
+                <Link
+                  href="/cookies"
+                  sx={{
+                    color: 'rgba(255,255,255,0.7)',
+                    textDecoration: 'none',
+                    fontSize: '0.875rem',
+                    '&:hover': { color: colors.textOnDark },
+                    '&:focus-visible': { outline: '2px solid #ffd700', outlineOffset: 2 },
+                  }}
+                >
+                  Cookie Policy
+                </Link>
               </Stack>
             </Grid>
           </Grid>
-          <Box sx={{ borderTop: '1px solid rgba(255,255,255,0.1)', mt: 4, pt: 4, textAlign: 'center' }}>
-            <Typography variant="body2" sx={{ opacity: 0.5 }}>
+
+          {/* Copyright */}
+          <Box
+            sx={{
+              borderTop: '1px solid rgba(255,255,255,0.1)',
+              mt: 6,
+              pt: 4,
+              display: 'flex',
+              flexDirection: { xs: 'column', sm: 'row' },
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              gap: 2,
+            }}
+          >
+            <Typography
+              variant="body2"
+              sx={{ opacity: 0.7 }}
+            >
               © {new Date().getFullYear()} SortAid. All rights reserved.
+            </Typography>
+            <Typography
+              variant="body2"
+              sx={{
+                opacity: 0.7,
+                display: 'flex',
+                alignItems: 'center',
+                gap: 0.5,
+              }}
+            >
+              Made with ❤️ for students everywhere
             </Typography>
           </Box>
         </Container>
