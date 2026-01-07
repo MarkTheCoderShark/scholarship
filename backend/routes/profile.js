@@ -1,119 +1,277 @@
 const express = require('express');
 const router = express.Router();
 const StudentProfile = require('../models/StudentProfile');
-module.exports=router;
+const User = require('../models/User');
+const { authenticate } = require('../middleware/auth');
 
-const User = require("../models/User"); // assuming you have this
+// ===== ONBOARDING ENDPOINTS =====
 
-// Login Route
-router.post("/login", async (req, res) => {
-  const { email, password } = req.body;
-
+// POST: Save onboarding step data
+router.post('/onboarding', authenticate, async (req, res) => {
   try {
-    const user = await User.findOne({ email, password });
-    if (!user) {
-      return res.status(401).json({ error: "Invalid credentials" });
-    }
-    res.json({ message: "Login successful", userId: user._id });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Server error" });
-  }
-});
+    const { step, data } = req.body;
+    const userId = req.userId;
 
-// Register Route
-router.post("/register", async (req, res) => {
-  const { name, email, password, gpa, location, course } = req.body;
+    let profile = await StudentProfile.findOne({ userId });
 
-  try {
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(400).json({ error: "User already exists" });
+    if (!profile) {
+      profile = new StudentProfile({ userId });
     }
 
-    const newUser = new User({
-      name,
-      email,
-      password, // ⚠ For security: hash this before storing in production!
-      gpa,
-      location,
-      course,
+    // Merge step data into profile
+    Object.keys(data).forEach(key => {
+      if (data[key] !== undefined) {
+        profile[key] = data[key];
+      }
     });
 
-    await newUser.save();
-    res.status(201).json({ message: "User registered", userId: newUser._id });
+    // Update onboarding progress
+    profile.onboardingStep = Math.max(profile.onboardingStep, step);
+
+    // Check if onboarding is complete (step 8 is Review/final step)
+    if (step >= 7) {
+      profile.onboardingCompleted = true;
+
+      // Also update the user record
+      await User.findByIdAndUpdate(userId, { onboardingCompleted: true });
+    }
+
+    // Calculate profile completeness
+    profile.calculateCompleteness();
+
+    await profile.save();
+
+    res.json({
+      message: 'Onboarding step saved',
+      profile,
+      onboardingStep: profile.onboardingStep,
+      profileCompleteness: profile.profileCompleteness
+    });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Server error during registration" });
+    console.error('Onboarding error:', err);
+    res.status(500).json({ error: 'Failed to save onboarding data' });
   }
 });
 
-// POST: Create or update a student profile
-router.post('/', async (req, res) => {
-    try {
-        const { userId, gpa, course, location, interests } = req.body;
-        let profile = await StudentProfile.findOne({ userId });
+// GET: Get onboarding progress
+router.get('/onboarding/progress', authenticate, async (req, res) => {
+  try {
+    const profile = await StudentProfile.findOne({ userId: req.userId });
 
-        if (profile) {
-            profile.gpa = gpa;
-            profile.course = course;
-            profile.location = location;
-            profile.interests = interests;
-            await profile.save();
-            return res.json(profile);
-        }
-
-        profile = new StudentProfile({ userId, gpa, course, location, interests });
-        await profile.save();
-        res.status(201).json(profile);
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: 'Server error' });
+    if (!profile) {
+      return res.json({
+        onboardingStep: 0,
+        onboardingCompleted: false,
+        profileCompleteness: 0,
+        completedSections: []
+      });
     }
+
+    res.json({
+      onboardingStep: profile.onboardingStep,
+      onboardingCompleted: profile.onboardingCompleted,
+      profileCompleteness: profile.profileCompleteness,
+      completedSections: profile.completedSections
+    });
+  } catch (err) {
+    console.error('Get onboarding progress error:', err);
+    res.status(500).json({ error: 'Failed to get onboarding progress' });
+  }
 });
 
-// GET: Retrieve a student profile
-router.get('/:userId', async (req, res) => {
-    try {
-        const profile = await StudentProfile.findOne({ userId: req.params.userId });
-        if (!profile) {
-            return res.status(404).json({ error: 'Profile not found' });
+// ===== PROFILE CRUD ENDPOINTS =====
+
+// POST: Create or update a student profile
+router.post('/', authenticate, async (req, res) => {
+  try {
+    const userId = req.userId;
+    let profile = await StudentProfile.findOne({ userId });
+
+    if (profile) {
+      // Update existing profile
+      Object.keys(req.body).forEach(key => {
+        if (req.body[key] !== undefined && key !== 'userId') {
+          profile[key] = req.body[key];
         }
-        res.json(profile);
-    } catch (err) {
-        res.status(500).json({ error: 'Server error' });
+      });
+
+      profile.calculateCompleteness();
+      await profile.save();
+      return res.json(profile);
     }
+
+    // Create new profile
+    profile = new StudentProfile({
+      userId,
+      ...req.body
+    });
+
+    profile.calculateCompleteness();
+    await profile.save();
+    res.status(201).json(profile);
+  } catch (err) {
+    console.error('Create/update profile error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// GET: Get current user's profile
+router.get('/me', authenticate, async (req, res) => {
+  try {
+    const profile = await StudentProfile.findOne({ userId: req.userId });
+
+    if (!profile) {
+      return res.status(404).json({ error: 'Profile not found' });
+    }
+
+    res.json(profile);
+  } catch (err) {
+    console.error('Get profile error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// GET: Get profile completeness breakdown
+router.get('/completeness', authenticate, async (req, res) => {
+  try {
+    const profile = await StudentProfile.findOne({ userId: req.userId });
+
+    if (!profile) {
+      return res.json({
+        profileCompleteness: 0,
+        completedSections: [],
+        missingSections: ['personal', 'academic', 'location', 'financial', 'background', 'interests', 'activities']
+      });
+    }
+
+    const allSections = ['personal', 'academic', 'location', 'financial', 'background', 'interests', 'activities'];
+    const missingSections = allSections.filter(s => !profile.completedSections.includes(s));
+
+    res.json({
+      profileCompleteness: profile.profileCompleteness,
+      completedSections: profile.completedSections,
+      missingSections
+    });
+  } catch (err) {
+    console.error('Get completeness error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// GET: Retrieve a student profile by userId (legacy support)
+router.get('/:userId', async (req, res) => {
+  try {
+    const profile = await StudentProfile.findOne({ userId: req.params.userId });
+
+    if (!profile) {
+      return res.status(404).json({ error: 'Profile not found' });
+    }
+
+    res.json(profile);
+  } catch (err) {
+    console.error('Get profile by userId error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
 });
 
 // PUT: Update a student profile
-router.put('/:userId', async (req, res) => {
-    try {
-        const { gpa, course, location, interests } = req.body;
-        const profile = await StudentProfile.findOneAndUpdate(
-            { userId: req.params.userId },
-            { gpa, course, location, interests },
-            { new: true }
-        );
-        if (!profile) {
-            return res.status(404).json({ error: 'Profile not found' });
-        }
-        res.json(profile);
-    } catch (err) {
-        res.status(500).json({ error: 'Server error' });
+router.put('/:userId', authenticate, async (req, res) => {
+  try {
+    // Verify user is updating their own profile
+    if (req.params.userId !== req.userId.toString()) {
+      return res.status(403).json({ error: 'Not authorized to update this profile' });
     }
+
+    const profile = await StudentProfile.findOne({ userId: req.params.userId });
+
+    if (!profile) {
+      return res.status(404).json({ error: 'Profile not found' });
+    }
+
+    // Update fields
+    Object.keys(req.body).forEach(key => {
+      if (req.body[key] !== undefined && key !== 'userId') {
+        profile[key] = req.body[key];
+      }
+    });
+
+    profile.calculateCompleteness();
+    await profile.save();
+
+    res.json(profile);
+  } catch (err) {
+    console.error('Update profile error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// PATCH: Update specific profile section
+router.patch('/section/:section', authenticate, async (req, res) => {
+  try {
+    const { section } = req.params;
+    const profile = await StudentProfile.findOne({ userId: req.userId });
+
+    if (!profile) {
+      return res.status(404).json({ error: 'Profile not found' });
+    }
+
+    // Define which fields belong to each section
+    const sectionFields = {
+      personal: ['dateOfBirth', 'gender', 'ethnicity', 'citizenshipStatus', 'countryOfOrigin'],
+      academic: ['gpa', 'gpaScale', 'major', 'fieldsOfStudy', 'schoolLevel', 'expectedGraduationYear', 'currentSchool', 'satScore', 'actScore'],
+      location: ['state', 'country', 'city'],
+      financial: ['financialNeedLevel', 'estimatedFamilyContribution', 'householdSize', 'householdIncome'],
+      background: ['isFirstGeneration', 'hasDisability', 'disabilityTypes', 'isMilitary', 'militaryStatus', 'militaryBranch'],
+      interests: ['interests', 'careerGoals'],
+      activities: ['extracurriculars', 'achievements', 'communityServiceHours', 'workExperience', 'languages', 'specialSkills']
+    };
+
+    const allowedFields = sectionFields[section];
+
+    if (!allowedFields) {
+      return res.status(400).json({ error: 'Invalid section' });
+    }
+
+    // Only update fields in the specified section
+    Object.keys(req.body).forEach(key => {
+      if (allowedFields.includes(key) && req.body[key] !== undefined) {
+        profile[key] = req.body[key];
+      }
+    });
+
+    profile.calculateCompleteness();
+    await profile.save();
+
+    res.json({
+      message: `Section '${section}' updated`,
+      profile,
+      profileCompleteness: profile.profileCompleteness
+    });
+  } catch (err) {
+    console.error('Update section error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
 });
 
 // DELETE: Delete a student profile
-router.delete('/:userId', async (req, res) => {
-    try {
-        const profile = await StudentProfile.findOneAndDelete({ userId: req.params.userId });
-        if (!profile) {
-            return res.status(404).json({ error: 'Profile not found' });
-        }
-        res.json({ message: 'Profile deleted' });
-    } catch (err) {
-        res.status(500).json({ error: 'Server error' });
+router.delete('/:userId', authenticate, async (req, res) => {
+  try {
+    // Verify user is deleting their own profile
+    if (req.params.userId !== req.userId.toString()) {
+      return res.status(403).json({ error: 'Not authorized to delete this profile' });
     }
+
+    const profile = await StudentProfile.findOneAndDelete({ userId: req.params.userId });
+
+    if (!profile) {
+      return res.status(404).json({ error: 'Profile not found' });
+    }
+
+    res.json({ message: 'Profile deleted' });
+  } catch (err) {
+    console.error('Delete profile error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
 });
 
 module.exports = router;

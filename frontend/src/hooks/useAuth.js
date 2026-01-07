@@ -1,9 +1,7 @@
-import React, { createContext, useState, useEffect, useCallback } from "react";
-import { authAPI, profileAPI, setTokens, clearTokens, getAccessToken } from "../services/api";
+import { useState, useEffect, useCallback } from 'react';
+import { authAPI, profileAPI, setTokens, clearTokens, getAccessToken } from '../services/api';
 
-export const UserContext = createContext(null);
-
-export const UserProvider = ({ children }) => {
+export function useAuth() {
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -33,7 +31,7 @@ export const UserProvider = ({ children }) => {
         const profileResponse = await profileAPI.getProfile();
         setProfile(profileResponse.data);
       } catch (profileError) {
-        // Profile might not exist yet
+        // Profile might not exist yet - that's ok
         console.log('No profile found');
       }
     } catch (error) {
@@ -52,12 +50,12 @@ export const UserProvider = ({ children }) => {
 
     try {
       const response = await authAPI.login({ email, password });
-      const { user: userData, accessToken, refreshToken } = response.data;
+      const { user, accessToken, refreshToken } = response.data;
 
       setTokens(accessToken, refreshToken);
-      setUser(userData);
+      setUser(user);
       setIsAuthenticated(true);
-      localStorage.setItem('user', JSON.stringify(userData));
+      localStorage.setItem('user', JSON.stringify(user));
 
       // Try to get profile
       try {
@@ -67,7 +65,7 @@ export const UserProvider = ({ children }) => {
         // No profile yet
       }
 
-      return { success: true, user: userData };
+      return { success: true, user };
     } catch (error) {
       const message = error.response?.data?.error || 'Login failed';
       setError(message);
@@ -83,14 +81,14 @@ export const UserProvider = ({ children }) => {
 
     try {
       const response = await authAPI.register({ name, email, password });
-      const { user: userData, accessToken, refreshToken } = response.data;
+      const { user, accessToken, refreshToken } = response.data;
 
       setTokens(accessToken, refreshToken);
-      setUser(userData);
+      setUser(user);
       setIsAuthenticated(true);
-      localStorage.setItem('user', JSON.stringify(userData));
+      localStorage.setItem('user', JSON.stringify(user));
 
-      return { success: true, user: userData };
+      return { success: true, user };
     } catch (error) {
       const message = error.response?.data?.error ||
                       error.response?.data?.errors?.[0]?.msg ||
@@ -123,39 +121,17 @@ export const UserProvider = ({ children }) => {
     setUser(prev => ({ ...prev, ...updates }));
   }, []);
 
-  const refreshProfile = useCallback(async () => {
-    try {
-      const profileResponse = await profileAPI.getProfile();
-      setProfile(profileResponse.data);
-      return profileResponse.data;
-    } catch (error) {
-      console.error('Failed to refresh profile:', error);
-      return null;
-    }
-  }, []);
-
-  const value = {
-    // State
+  return {
     user,
     profile,
     isAuthenticated,
     isLoading,
     error,
-
-    // Actions
     login,
     register,
     logout,
-    setUser,
     updateProfile,
     updateUser,
-    refreshProfile,
     checkAuthStatus
   };
-
-  return (
-    <UserContext.Provider value={value}>
-      {children}
-    </UserContext.Provider>
-  );
-};
+}

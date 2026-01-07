@@ -1,117 +1,145 @@
-import React, { useState ,useContext} from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useContext } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import {
+  Container, Paper, TextField, Button, Typography, Box,
+  Alert, CircularProgress
+} from "@mui/material";
 import { UserContext } from "./UserContext";
-import { Link } from "react-router-dom";
-import "./Register.css";
 
-const Register = ({ onRegister }) => {
+const Register = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [grades, setGrades] = useState("");
-  const [location, setLocation] = useState("");
-  const [course, setCourse] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
-  const{setUser}=useContext(UserContext);
+  const { register } = useContext(UserContext);
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
+    setError("");
 
-  const userdata = {
-    name,
-    email,
-    password,
-    gpa: grades,
-    location,
-    course,
-  };
-  try {
-    console.log("sending data to backend",userdata);
-    const response = await fetch("http://localhost:8000/api/profile/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(userdata),
-    });
-
-    const data = await response.json();
-    console.log("backend response",data);
-    if (response.ok) {
-      setUser(userdata);
-      onRegister();
-      navigate("/home");
-    } else {
-      alert(data.error || "Registration failed");
+    // Validation
+    if (password !== confirmPassword) {
+      setError("Passwords do not match");
+      return;
     }
-  } catch (error) {
-    console.error("Registration error:", error);
-    alert("Server error during registration");
-  }
-  axios.post('http://localhost:8000/api/profile', {
-  userId: email,
-  gpa: grades,
-  course,
-  location,
-  interests: [],
-});
-};
+
+    if (password.length < 8) {
+      setError("Password must be at least 8 characters");
+      return;
+    }
+
+    if (!/\d/.test(password)) {
+      setError("Password must contain at least one number");
+      return;
+    }
+
+    setIsLoading(true);
+
+    const result = await register(name, email, password);
+
+    if (result.success) {
+      // Redirect to onboarding to complete profile
+      navigate("/onboarding");
+    } else {
+      setError(result.error || "Registration failed. Please try again.");
+    }
+
+    setIsLoading(false);
+  };
 
   return (
-    <>
-    <div className="heading">
-      <h1>Don't have an account ?</h1>
-      <h1>No Worries, Register Now !</h1>
-      <p>Please provide the following details to register</p>
-    </div>
-    <div className="register-container">
-      <form onSubmit={handleSubmit} className="register-form">
-        <input
-          type="text"
-          placeholder="Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
-        />
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-        <input
-          type="grades"
-          placeholder="GPA"
-          value={grades}
-          onChange={(e) => setGrades(e.target.value)}
-          required
-        />
-        <input
-          type="location"
-          placeholder="Location"
-          value={location}
-          onChange={(e) => setLocation(e.target.value)}
-          required
-        />
-        <input
-          type="course"
-          placeholder="Course"
-          value={course}
-          onChange={(e) => setCourse(e.target.value)}
-          required
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-        <button type="submit">Register</button>
-      </form>
-      <p>Already have an account ? <Link to="/login">Login</Link></p>
-    </div>
-    </>
+    <Container maxWidth="sm" sx={{ mt: 8 }}>
+      <Paper elevation={3} sx={{ p: 4 }}>
+        <Box sx={{ textAlign: 'center', mb: 4 }}>
+          <Typography variant="h4" gutterBottom>
+            Create Account
+          </Typography>
+          <Typography variant="body1" color="text.secondary">
+            Join SortAid to discover scholarships matched to your profile
+          </Typography>
+        </Box>
+
+        {error && (
+          <Alert severity="error" sx={{ mb: 3 }} onClose={() => setError("")}>
+            {error}
+          </Alert>
+        )}
+
+        <form onSubmit={handleSubmit}>
+          <TextField
+            fullWidth
+            label="Full Name"
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+            sx={{ mb: 2 }}
+            autoComplete="name"
+          />
+
+          <TextField
+            fullWidth
+            label="Email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            sx={{ mb: 2 }}
+            autoComplete="email"
+          />
+
+          <TextField
+            fullWidth
+            label="Password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            sx={{ mb: 2 }}
+            autoComplete="new-password"
+            helperText="At least 8 characters with one number"
+          />
+
+          <TextField
+            fullWidth
+            label="Confirm Password"
+            type="password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            required
+            sx={{ mb: 3 }}
+            autoComplete="new-password"
+          />
+
+          <Button
+            type="submit"
+            variant="contained"
+            fullWidth
+            size="large"
+            disabled={isLoading}
+            sx={{ mb: 2 }}
+          >
+            {isLoading ? <CircularProgress size={24} /> : "Create Account"}
+          </Button>
+        </form>
+
+        <Typography variant="body2" align="center" sx={{ mb: 2 }}>
+          Already have an account?{" "}
+          <Link to="/login" style={{ color: '#1976d2' }}>
+            Sign in
+          </Link>
+        </Typography>
+
+        <Typography variant="caption" color="text.secondary" display="block" align="center">
+          After registration, you'll complete a short profile questionnaire
+          to get personalized scholarship recommendations.
+        </Typography>
+      </Paper>
+    </Container>
   );
 };
 
