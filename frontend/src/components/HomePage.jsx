@@ -574,15 +574,15 @@ const HomePage = () => {
             </Typography>
           </Box>
 
-          <Grid container spacing={4} alignItems="stretch">
+          <Grid container spacing={{ xs: 1, sm: 2, md: 4 }} alignItems="stretch">
             {steps.map((step, idx) => (
-              <Grid item xs={12} md={4} key={idx}>
+              <Grid item xs={4} key={idx}>
                 <Card
                   elevation={0}
                   sx={{
                     height: '100%',
                     textAlign: 'center',
-                    p: { xs: 3, md: 4 },
+                    p: { xs: 2, sm: 3, md: 4 },
                     borderRadius: 4,
                     border: '2px solid',
                     borderColor: 'grey.100',
@@ -603,25 +603,25 @@ const HomePage = () => {
                   {/* Step number */}
                   <Box
                     sx={{
-                      width: 56,
-                      height: 56,
+                      width: { xs: 36, sm: 48, md: 56 },
+                      height: { xs: 36, sm: 48, md: 56 },
                       borderRadius: '50%',
                       bgcolor: colors.primaryLight,
                       color: colors.primary,
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      fontSize: '1.5rem',
+                      fontSize: { xs: '1rem', sm: '1.25rem', md: '1.5rem' },
                       fontWeight: 800,
                       mx: 'auto',
-                      mb: 3,
+                      mb: { xs: 1, sm: 2, md: 3 },
                     }}
                     aria-hidden="true"
                   >
                     {step.number}
                   </Box>
 
-                  {/* Highlight chip */}
+                  {/* Highlight chip - hidden on mobile for space */}
                   <Chip
                     label={step.highlight}
                     size="small"
@@ -629,7 +629,8 @@ const HomePage = () => {
                       bgcolor: colors.accentLight,
                       color: colors.accent,
                       fontWeight: 600,
-                      mb: 2,
+                      mb: { xs: 1, sm: 2 },
+                      display: { xs: 'none', sm: 'inline-flex' },
                     }}
                   />
 
@@ -638,7 +639,10 @@ const HomePage = () => {
                     component="h3"
                     fontWeight={700}
                     gutterBottom
-                    sx={{ color: colors.textOnLight }}
+                    sx={{
+                      color: colors.textOnLight,
+                      fontSize: { xs: '0.875rem', sm: '1.1rem', md: '1.25rem' },
+                    }}
                   >
                     {step.title}
                   </Typography>
@@ -646,7 +650,9 @@ const HomePage = () => {
                     variant="body1"
                     sx={{
                       color: colors.textMuted,
-                      lineHeight: 1.7,
+                      lineHeight: 1.6,
+                      fontSize: { xs: '0.75rem', sm: '0.875rem', md: '1rem' },
+                      display: { xs: 'none', sm: 'block' },
                     }}
                   >
                     {step.description}
@@ -712,15 +718,15 @@ const HomePage = () => {
             </Typography>
           </Box>
 
-          <Grid container spacing={3}>
+          <Grid container spacing={{ xs: 1, sm: 2, md: 3 }}>
             {features.map((feature, idx) => (
-              <Grid item xs={12} sm={6} md={3} key={idx}>
+              <Grid item xs={6} sm={6} md={3} key={idx}>
                 <Card
                   elevation={0}
                   sx={{
                     height: '100%',
-                    p: 3,
-                    borderRadius: 3,
+                    p: { xs: 1.5, sm: 2, md: 3 },
+                    borderRadius: { xs: 2, md: 3 },
                     bgcolor: colors.surface,
                     border: '1px solid',
                     borderColor: 'grey.200',
@@ -735,11 +741,12 @@ const HomePage = () => {
                   <Box
                     sx={{
                       color: colors.primary,
-                      mb: 2,
+                      mb: { xs: 1, sm: 2 },
                       display: 'inline-flex',
-                      p: 1.5,
+                      p: { xs: 1, sm: 1.5 },
                       borderRadius: 2,
                       bgcolor: colors.primaryLight,
+                      '& svg': { fontSize: { xs: 24, sm: 28, md: 32 } },
                     }}
                     aria-hidden="true"
                   >
@@ -752,7 +759,8 @@ const HomePage = () => {
                     gutterBottom
                     sx={{
                       color: colors.textOnLight,
-                      fontSize: '1.1rem',
+                      fontSize: { xs: '0.8rem', sm: '0.95rem', md: '1.1rem' },
+                      lineHeight: 1.3,
                     }}
                   >
                     {feature.title}
@@ -761,7 +769,9 @@ const HomePage = () => {
                     variant="body2"
                     sx={{
                       color: colors.textMuted,
-                      lineHeight: 1.7,
+                      lineHeight: 1.5,
+                      fontSize: { xs: '0.7rem', sm: '0.8rem', md: '0.875rem' },
+                      display: { xs: 'none', sm: 'block' },
                     }}
                   >
                     {feature.description}
@@ -812,14 +822,14 @@ const HomePage = () => {
             </Typography>
           </Box>
 
-          <Grid container spacing={4} justifyContent="center">
+          <Grid container spacing={{ xs: 1, sm: 2, md: 4 }} justifyContent="center">
             {pricingPlans.map((plan, idx) => (
-              <Grid item xs={12} sm={6} key={idx}>
+              <Grid item xs={6} key={idx}>
                 <Card
                   elevation={0}
                   sx={{
                     height: '100%',
-                    p: 4,
+                    p: { xs: 1.5, sm: 2.5, md: 4 },
                     borderRadius: 4,
                     border: '2px solid',
                     borderColor: plan.highlighted ? colors.primary : 'grey.200',
@@ -853,16 +863,19 @@ const HomePage = () => {
                     component="h3"
                     fontWeight={700}
                     gutterBottom
-                    sx={{ color: colors.textOnLight }}
+                    sx={{
+                      color: colors.textOnLight,
+                      fontSize: { xs: '1rem', sm: '1.25rem', md: '1.5rem' },
+                    }}
                   >
                     {plan.name}
                   </Typography>
 
-                  <Box sx={{ mb: 2 }}>
+                  <Box sx={{ mb: { xs: 1, sm: 2 } }}>
                     <Typography
                       component="span"
                       sx={{
-                        fontSize: '3rem',
+                        fontSize: { xs: '1.5rem', sm: '2rem', md: '3rem' },
                         fontWeight: 800,
                         color: colors.textOnLight,
                       }}
@@ -871,7 +884,10 @@ const HomePage = () => {
                     </Typography>
                     <Typography
                       component="span"
-                      sx={{ color: colors.textMuted }}
+                      sx={{
+                        color: colors.textMuted,
+                        fontSize: { xs: '0.7rem', sm: '0.875rem' },
+                      }}
                     >
                       {plan.period}
                     </Typography>
@@ -881,28 +897,30 @@ const HomePage = () => {
                     variant="body2"
                     sx={{
                       color: colors.textMuted,
-                      mb: 3,
+                      mb: { xs: 1, sm: 2, md: 3 },
+                      fontSize: { xs: '0.7rem', sm: '0.8rem', md: '0.875rem' },
+                      display: { xs: 'none', sm: 'block' },
                     }}
                   >
                     {plan.description}
                   </Typography>
 
-                  <Divider sx={{ my: 3 }} />
+                  <Divider sx={{ my: { xs: 1, sm: 2, md: 3 } }} />
 
-                  <Stack spacing={2} sx={{ mb: 4 }}>
+                  <Stack spacing={{ xs: 0.5, sm: 1, md: 2 }} sx={{ mb: { xs: 2, sm: 3, md: 4 } }}>
                     {plan.features.map((feature, fIdx) => (
                       <Box
                         key={fIdx}
                         sx={{
                           display: 'flex',
                           alignItems: 'center',
-                          gap: 1.5,
+                          gap: { xs: 0.5, sm: 1, md: 1.5 },
                         }}
                       >
                         {feature.included ? (
                           <CheckIcon
                             sx={{
-                              fontSize: 20,
+                              fontSize: { xs: 14, sm: 18, md: 20 },
                               color: colors.success,
                               flexShrink: 0,
                             }}
@@ -910,7 +928,7 @@ const HomePage = () => {
                         ) : (
                           <CloseIcon
                             sx={{
-                              fontSize: 20,
+                              fontSize: { xs: 14, sm: 18, md: 20 },
                               color: 'grey.400',
                               flexShrink: 0,
                             }}
@@ -920,6 +938,8 @@ const HomePage = () => {
                           variant="body2"
                           sx={{
                             color: feature.included ? colors.textOnLight : colors.textMuted,
+                            fontSize: { xs: '0.65rem', sm: '0.75rem', md: '0.875rem' },
+                            lineHeight: 1.3,
                           }}
                         >
                           {feature.text}
@@ -934,9 +954,10 @@ const HomePage = () => {
                     size="large"
                     onClick={() => navigate("/register")}
                     sx={{
-                      py: 1.5,
+                      py: { xs: 1, sm: 1.25, md: 1.5 },
                       fontWeight: 700,
                       borderRadius: 2,
+                      fontSize: { xs: '0.7rem', sm: '0.85rem', md: '1rem' },
                       ...(plan.highlighted ? {
                         bgcolor: colors.primary,
                         '&:hover': {
@@ -1019,15 +1040,15 @@ const HomePage = () => {
             </Typography>
           </Box>
 
-          <Grid container spacing={4}>
+          <Grid container spacing={{ xs: 1, sm: 2, md: 4 }}>
             {testimonials.map((testimonial, idx) => (
-              <Grid item xs={12} md={4} key={idx}>
+              <Grid item xs={4} key={idx}>
                 <Card
                   elevation={0}
                   sx={{
                     height: '100%',
-                    p: 4,
-                    borderRadius: 4,
+                    p: { xs: 1.5, sm: 2.5, md: 4 },
+                    borderRadius: { xs: 2, md: 4 },
                     bgcolor: colors.surface,
                     border: '1px solid',
                     borderColor: 'grey.200',
@@ -1035,11 +1056,11 @@ const HomePage = () => {
                   }}
                 >
                   {/* Star Rating */}
-                  <Stack direction="row" spacing={0.5} sx={{ mb: 2 }}>
+                  <Stack direction="row" spacing={0.25} sx={{ mb: { xs: 1, sm: 2 } }}>
                     {[...Array(testimonial.rating)].map((_, i) => (
                       <StarIcon
                         key={i}
-                        sx={{ fontSize: 20, color: '#ffc107' }}
+                        sx={{ fontSize: { xs: 12, sm: 16, md: 20 }, color: '#ffc107' }}
                         aria-hidden="true"
                       />
                     ))}
@@ -1055,32 +1076,39 @@ const HomePage = () => {
                     aria-hidden="true"
                     sx={{
                       position: 'absolute',
-                      top: 20,
-                      right: 20,
-                      fontSize: 40,
+                      top: { xs: 8, sm: 16, md: 20 },
+                      right: { xs: 8, sm: 16, md: 20 },
+                      fontSize: { xs: 20, sm: 30, md: 40 },
                       color: 'grey.100',
+                      display: { xs: 'none', sm: 'block' },
                     }}
                   />
 
                   <Typography
                     variant="body1"
                     sx={{
-                      mb: 3,
+                      mb: { xs: 1.5, sm: 2, md: 3 },
                       color: colors.textOnLight,
-                      lineHeight: 1.8,
+                      lineHeight: { xs: 1.4, sm: 1.6, md: 1.8 },
                       fontStyle: 'italic',
+                      fontSize: { xs: '0.7rem', sm: '0.85rem', md: '1rem' },
+                      display: '-webkit-box',
+                      WebkitLineClamp: { xs: 4, sm: 6, md: 'unset' },
+                      WebkitBoxOrient: 'vertical',
+                      overflow: 'hidden',
                     }}
                   >
                     "{testimonial.quote}"
                   </Typography>
 
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 1, sm: 1.5, md: 2 } }}>
                     <Avatar
                       sx={{
                         bgcolor: colors.primary,
-                        width: 48,
-                        height: 48,
+                        width: { xs: 28, sm: 36, md: 48 },
+                        height: { xs: 28, sm: 36, md: 48 },
                         fontWeight: 700,
+                        fontSize: { xs: '0.75rem', sm: '1rem', md: '1.25rem' },
                       }}
                       aria-hidden="true"
                     >
@@ -1090,13 +1118,20 @@ const HomePage = () => {
                       <Typography
                         variant="subtitle2"
                         fontWeight={700}
-                        sx={{ color: colors.textOnLight }}
+                        sx={{
+                          color: colors.textOnLight,
+                          fontSize: { xs: '0.65rem', sm: '0.8rem', md: '0.875rem' },
+                        }}
                       >
                         {testimonial.name}
                       </Typography>
                       <Typography
                         variant="body2"
-                        sx={{ color: colors.textMuted }}
+                        sx={{
+                          color: colors.textMuted,
+                          fontSize: { xs: '0.55rem', sm: '0.7rem', md: '0.8rem' },
+                          display: { xs: 'none', sm: 'block' },
+                        }}
                       >
                         {testimonial.role}
                       </Typography>
